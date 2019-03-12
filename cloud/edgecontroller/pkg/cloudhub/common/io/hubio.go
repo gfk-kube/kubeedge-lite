@@ -2,9 +2,8 @@ package io
 
 import (
 	"encoding/json"
-	"time"
-
 	"github.com/gorilla/websocket"
+	"time"
 )
 
 // CloudHubIO handle the IO operation from connection
