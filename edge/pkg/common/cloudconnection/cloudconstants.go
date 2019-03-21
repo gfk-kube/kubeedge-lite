@@ -1,4 +1,4 @@
-package model
+package cloudconnection
 
 //constants for cloud connection
 const (
