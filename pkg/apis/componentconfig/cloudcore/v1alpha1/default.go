@@ -170,7 +170,7 @@ func NewMinCloudCoreConfig() *CloudCoreConfig {
 			},
 		},
 		LeaderElection:	&componentbaseconfig.LeaderElectionConfiguration{
-			LeaderElect:		true,
+			LeaderElect:		false,
 		},
 	}
 }
