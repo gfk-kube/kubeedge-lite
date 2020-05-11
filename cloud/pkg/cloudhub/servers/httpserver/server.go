@@ -169,7 +169,6 @@ func CheckCaExistsFromSecret() bool {
 		return false
 	}
 	return true
-
 }
 
 // CheckCertExistsFromSecret checks CloudCore certificate from secret
