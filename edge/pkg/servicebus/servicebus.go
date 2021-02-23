@@ -13,13 +13,14 @@ import (
 	"github.com/kubeedge/beehive/pkg/core"
 	beehiveContext "github.com/kubeedge/beehive/pkg/core/context"
 	"github.com/kubeedge/beehive/pkg/core/model"
+	commonType "github.com/kubeedge/kubeedge/common/types"
 	"github.com/kubeedge/kubeedge/edge/pkg/common/modules"
 	"github.com/kubeedge/kubeedge/edge/pkg/servicebus/util"
 	"github.com/kubeedge/kubeedge/pkg/apis/componentconfig/edgecore/v1alpha1"
 )
 
 const (
-	sourceType  = "router_rest"
+	sourceType  = "router_servicebus"
 	maxBodySize = 5 * 1e6
 )
 
@@ -44,7 +45,7 @@ func (*servicebus) Name() string {
 }
 
 func (*servicebus) Group() string {
-	return modules.UserGroup
+	return modules.BusGroup
 }
 
 func (sb *servicebus) Enable() bool {
@@ -99,7 +100,7 @@ func (sb *servicebus) Start() {
 				}
 				return
 			}
-			var httpRequest util.HTTPRequest
+			var httpRequest commonType.HTTPRequest
 			if err := json.Unmarshal(content, &httpRequest); err != nil {
 				m := "error to parse http request"
 				code := http.StatusBadRequest
@@ -109,8 +110,8 @@ func (sb *servicebus) Start() {
 				}
 				return
 			}
-			operation := msg.GetOperation()
-			targetURL := "http://127.0.0.1:" + r[0] + "/" + r[1]
+			operation := httpRequest.Method
+			targetURL := "http://127.0.0.1:" + r[0] + r[1]
 			resp, err := uc.HTTPDo(operation, targetURL, httpRequest.Header, httpRequest.Body)
 			if err != nil {
 				m := "error to call service"
@@ -136,10 +137,10 @@ func (sb *servicebus) Start() {
 				return
 			}
 
-			response := util.HTTPResponse{Header: resp.Header, StatusCode: resp.StatusCode, Body: resBody}
+			response := commonType.HTTPResponse{Header: resp.Header, StatusCode: resp.StatusCode, Body: resBody}
 			responseMsg := model.NewMessage(msg.GetID())
 			responseMsg.Content = response
-			responseMsg.SetRoute("servicebus", modules.UserGroup)
+			responseMsg.SetRoute("servicebus", modules.UserGroup).SetResourceOperation("", "upload")
 			beehiveContext.SendToGroup(modules.HubGroup, *responseMsg)
 		}()
 	}
@@ -149,7 +150,7 @@ func buildErrorResponse(parentID string, content string, statusCode int) (model.
 	responseMsg := model.NewMessage(parentID)
 	h := http.Header{}
 	h.Add("Server", "kubeedge-edgecore")
-	c := util.HTTPResponse{Header: h, StatusCode: statusCode, Body: []byte(content)}
+	c := commonType.HTTPResponse{Header: h, StatusCode: statusCode, Body: []byte(content)}
 	responseMsg.Content = c
 	responseMsg.SetRoute("servicebus", modules.UserGroup)
 	return *responseMsg, nil
