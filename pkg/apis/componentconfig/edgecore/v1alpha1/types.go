@@ -57,8 +57,6 @@ type EdgeCoreConfig struct {
 	// Modules indicates EdgeCore modules config
 	// +Required
 	Modules *Modules `json:"modules,omitempty"`
-	// FeatureGates is a map of feature names to bools that enable or disable alpha/experimental features.
-	FeatureGates map[string]bool `json:"featureGates,omitempty"`
 }
 
 // DataBase indicates the database info
@@ -127,8 +125,7 @@ type Edged struct {
 	// RemoteImageEndpoint indicates remote image endpoint
 	// default "unix:///var/run/dockershim.sock"
 	RemoteImageEndpoint string `json:"remoteImageEndpoint,omitempty"`
-	// NodeIP indicates current node ip.
-	// Setting the value overwrites the automatically detected IP address
+	// NodeIP indicates current node ip
 	// default get local host ip
 	NodeIP string `json:"nodeIP"`
 	// ClusterDNS indicates cluster dns
@@ -143,7 +140,7 @@ type Edged struct {
 	EdgedMemoryCapacity int64 `json:"edgedMemoryCapacity,omitempty"`
 	// PodSandboxImage is the image whose network/ipc namespaces containers in each pod will use.
 	// +Required
-	// default kubeedge/pause:3.1
+	// default k8s.gcr.io/pause:3.1
 	PodSandboxImage string `json:"podSandboxImage,omitempty"`
 	// ImagePullProgressDeadline indicates image pull progress dead line (second)
 	// default 60
@@ -160,11 +157,10 @@ type Edged struct {
 	//RegisterNodeNamespace indicates register node namespace
 	// default "default"
 	RegisterNodeNamespace string `json:"registerNodeNamespace,omitempty"`
-	// CustomInterfaceName indicates the name of the network interface used for obtaining the IP address.
-	// Setting this will override the setting 'NodeIP' if provided.
-	// If this is not defined the IP address is obtained by the hostname.
-	// default ""
-	CustomInterfaceName string `json:"customInterfaceName,omitempty"`
+	// InterfaceName indicates interface name
+	// default "eth0"
+	// DEPRECATED after v1.5
+	InterfaceName string `json:"interfaceName,omitempty"`
 	// ConcurrentConsumers indicates concurrent consumers for pod add or remove operation
 	// default 5
 	ConcurrentConsumers int `json:"concurrentConsumers,omitempty"`
@@ -384,9 +380,8 @@ type MetaManager struct {
 }
 
 type MetaServer struct {
-	Enable bool   `json:"enable"`
-	Debug  bool   `json:"debug"`
-	Server string `json:"server"`
+	Enable bool `json:"enable"`
+	Debug  bool `json:"debug"`
 }
 
 // ServiceBus indicates the ServiceBus module config
