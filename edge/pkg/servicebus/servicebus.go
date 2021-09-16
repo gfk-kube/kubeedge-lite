@@ -12,7 +12,7 @@ import (
 
 	"github.com/kubeedge/beehive/pkg/core"
 	beehiveContext "github.com/kubeedge/beehive/pkg/core/context"
-	"github.com/kubeedge/beehive/pkg/core/model"
+	beehiveModel "github.com/kubeedge/beehive/pkg/core/model"
 	commonType "github.com/kubeedge/kubeedge/common/types"
 	"github.com/kubeedge/kubeedge/edge/pkg/common/modules"
 	"github.com/kubeedge/kubeedge/edge/pkg/servicebus/util"
@@ -80,7 +80,7 @@ func (sb *servicebus) Start() {
 	}
 }
 
-func processMessage(msg *model.Message) {
+func processMessage(msg *beehiveModel.Message) {
 	source := msg.GetSource()
 	if source != sourceType {
 		return
@@ -147,14 +147,14 @@ func processMessage(msg *model.Message) {
 	}
 
 	response := commonType.HTTPResponse{Header: resp.Header, StatusCode: resp.StatusCode, Body: resBody}
-	responseMsg := model.NewMessage(msg.GetID())
+	responseMsg := beehiveModel.NewMessage(msg.GetID())
 	responseMsg.Content = response
-	responseMsg.SetRoute("servicebus", modules.UserGroup).SetResourceOperation("", "upload")
+	responseMsg.SetRoute("servicebus", modules.UserGroup).SetResourceOperation("", beehiveModel.UploadOperation)
 	beehiveContext.SendToGroup(modules.HubGroup, *responseMsg)
 }
 
-func buildErrorResponse(parentID string, content string, statusCode int) (model.Message, error) {
-	responseMsg := model.NewMessage(parentID)
+func buildErrorResponse(parentID string, content string, statusCode int) (beehiveModel.Message, error) {
+	responseMsg := beehiveModel.NewMessage(parentID)
 	h := http.Header{}
 	h.Add("Server", "kubeedge-edgecore")
 	c := commonType.HTTPResponse{Header: h, StatusCode: statusCode, Body: []byte(content)}
