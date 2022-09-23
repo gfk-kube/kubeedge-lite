@@ -10,15 +10,13 @@ var Config Configure
 var once sync.Once
 
 type Configure struct {
-	v1alpha2.EventBus
-	NodeName string
+	v1alpha2.ServiceBus
 }
 
-func InitConfigure(eventbus *v1alpha2.EventBus, nodeName string) {
+func InitConfigure(s *v1alpha2.ServiceBus) {
 	once.Do(func() {
 		Config = Configure{
-			EventBus: *eventbus,
-			NodeName: nodeName,
+			ServiceBus: *s,
 		}
 	})
 }
