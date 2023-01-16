@@ -707,7 +707,6 @@ type TailoredKubeletConfiguration struct {
 
 // TailoredKubeletFlag indicates the tailored kubelet flag
 type TailoredKubeletFlag struct {
-	KubeConfig string `json:"kubeConfig,omitempty"`
 	// HostnameOverride is the hostname used to identify the kubelet instead
 	// of the actual hostname.
 	// default os.Hostname()
