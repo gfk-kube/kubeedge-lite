@@ -313,6 +313,8 @@ func (e *edged) handlePodListFromMetaManager(content []byte, updatesChan chan<- 
 		if filterPodByNodeName(&pod, e.nodeName) {
 			if pod.DeletionTimestamp == nil {
 				pods = append(pods, &pod)
+				//+
+				podsUpdate = append(podsUpdate, &pod)
 			} else {
 				podsUpdate = append(podsUpdate, &pod)
 			}
