@@ -1,8 +1,35 @@
 
 ##################FF_x64快速验证(build)
 # go build ./edge/cmd/edgecore/
+# ERR:verifying github.com/docker/distribution@v2.8.0+incompatible: checksum mismatch
+
+# env
+env; go version
+cat /etc/passwd |grep root
+cat /etc/group  |grep root
+
+export GOSUMDB=off #noEffect
+# go clean -modcache
+# rm go.sum
+# go mod tidy
+
+# handBuildErr DO:
+# GOSUMDB=off go get github.com/docker/docker/errdefs@v20.10.7+incompatible
+# GOSUMDB=off go get k8s.io/kubernetes/pkg/kubelet/images@v1.23.15
+
+# X64
 # export CGO_ENABLED=0 #sqlite
-go build -v -ldflags "-s -w $flags" ./edge/cmd/edgecore/
+GOSUMDB=off go build -o edgecore-x64 -v -ldflags "-s -w $flags" ./edge/cmd/edgecore/
+ls -lh edgecore-*
+# exit 0
+# ARM64
+GOARM="" # need to clear the value since golang compiler doesn't allow this env when building the binary for ARMv8.
+# CC=aarch64-linux-gnu-gcc 
+GOSUMDB=off GOARCH=arm64 GOOS="linux" CGO_ENABLED=1 CC=aarch64-linux-gnu-gcc go build -o edgecore-arm64 -ldflags "$flags" ./edge/cmd/edgecore/
+
+tar -zcf edgecore-x64.tar.gz edgecore-x64
+tar -zcf edgecore-arm64.tar.gz edgecore-arm64
+ls -lh edgecore-*
 exit 0
 
 
